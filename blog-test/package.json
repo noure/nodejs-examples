@@ -1,0 +1,9 @@
+{
+    "name": "blog-test",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "markdown": "0.3.1",
+        "plates": "0.4.5"
+    }
+}
