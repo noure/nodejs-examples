@@ -1,0 +1,27 @@
+{
+    "name":         "hello-world",
+    "description":  "(pending)",
+    "version":      "0.1",
+    "main":         "./hello-world.js",
+    
+    "author": {
+        "name" :        "Michael R. Lange",
+        "email" :       "daywalker2000@gmx.net"
+    },
+    
+    "keywords":     [],
+    
+    "licenses":      {
+        "type": "apache20"
+    }
+
+/*
+  "repository" : {
+  	  "type" : "git",
+  	  "url" : "git://github.com/langmi/hello-world.git"
+  },
+  "bugs" : {
+  	  "web" : "http://github.com/langmi/hello-world/issues"
+  },
+*/
+}
