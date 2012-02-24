@@ -1,7 +1,8 @@
 // dependencies
-var Fs = require('fs');
-var Markdown = require('markdown');
-var Plates = require('plates');
+var 
+    Fs = require('fs'),
+    Markdown = require('markdown'),
+    Plates = require('plates');
 
 // provide template as globale variable
 var template;

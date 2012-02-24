@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "markdown": "0.3.1",
-        "plates": "0.4.5"
+        "plates": "0.4.5",
+        "should": "0.5.1"
     }
 }
