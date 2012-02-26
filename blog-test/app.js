@@ -1,34 +1,74 @@
 #!/usr/bin/env node
-// use the markdown module https://github.com/evilstreak/markdown-js
-var Markdown = require("markdown");
-var input = "title:the title" + "\n\n"
-            + "author:Michael R. Lange" + "\n\n"
-            + "#A First Level Heading" + "\n\n"
-            + "A paragraph.";
-// make JSON ML Tree
-var outputOld = Markdown.markdown.parse(input);
-// remove the meta-data expects the markdown to contain meta-data until the first header
-var outputNew = new Array();
-var metaData = new Array();
-var remove = true;
-var splitMetaElement = function(element) {
-    return element.split(":");
-}
-// clone the json
-for (var i = 0; i < outputOld.length; i++) {
-    // if element is type paragraph, extract the meta-data, remove from tree
-    if (outputOld[i][0] == 'para' && remove) {
-        var metaElement = splitMetaElement(outputOld[i][1]);
-        metaData.push(metaElement);
-    } else {
-        outputNew.push(outputOld[i]);
+/*
+    * traverse a directory
+    * read files
+    * convert files from markdown to JsonMl
+    * extract meta-data
+    * convert JsonMl to html
+    * fill html into template 
+*/
+
+// dependencies
+var 
+    Beautify = require("beautify").js_beautify;
+    Findit = require("findit"),
+    Fs = require("fs"),
+    Markdown = require("markdown"),
+    Plates = require("plates");
+
+// setup
+var settings = {
+                "directory": "./articles",
+                "template": "templates/simple-html5-template.html",
+                "templateEncoding": "UTF-8"
+                };
+// used template
+var template = Fs.readFileSync(settings.template, settings.templateEncoding);
+
+// run through the articles directory and pull all articles
+Findit.find(settings.directory, function(file){
+    // show what it's doing
+    console.log("traversing:" + file);
+    // there is no need yet to distinguish .md files
+    // read the file
+    if (Fs.statSync(file).isFile() && file.indexOf(".md") != -1) {
+        processFile(file, "UTF-8");
     }
-    // if element is type header, end meta data processing
-    if (outputOld[i][0] == 'header') {
-        remove = false;
-    }
+});
+
+/*
+    file: string
+    encoding: e.g. utf-8
+*/
+function processFile(file, encoding) {
+    console.log("processing:" + file);
+    Fs.readFile(file, encoding, function(err,data){
+        if(err) {
+            console.error("Could not open file: %s", err);
+            process.exit(1);
+        }
+        var jsonOutput = markdownToJson(data);
+        // extract the metadata
+        var metaData = jsonOutput[1];
+        // create the html
+        var htmlOutput = Markdown.markdown.toHTML(jsonOutput);
+        // run through template engine
+        var map = Plates.Map();
+        map.where("author").is("").insert("author");
+        map.where("id").is("content").insert("content");
+        var output = Plates.bind(template, { "content": htmlOutput, "author": metaData.author }, map);
+        // insert meta-data
+        console.log(metaData);
+        console.log(Beautify(output));
+    });
 }
-console.log(metaData);
-// make html from the json
-var htmlOutput = Markdown.markdown.toHTML( outputNew );
-console.log( htmlOutput );
+/*
+    Converts markdown formatted text to JsonML.
+    Uses Maruku dialect which makes processing of meta-data possible.
+
+    data: markdown formatted text
+    returns the JsonMl formatted parser output
+*/
+function markdownToJson(data){
+    return Markdown.markdown.parse(data, "Maruku");
+}

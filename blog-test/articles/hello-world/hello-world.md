@@ -1,5 +1,8 @@
-title: the title
-author: Michael R. Lange
+name:hello-world
+title:the title
+author:Michael R. Lange
+date:24.02.2012
+tags:one,two,three,four
 
 # A simple Hello World! article
 
