@@ -11,11 +11,14 @@ var outputOld = Markdown.markdown.parse(input);
 var outputNew = new Array();
 var metaData = new Array();
 var remove = true;
+var splitMetaElement = function(element) {
+    return element.split(":");
+}
 // clone the json
 for (var i = 0; i < outputOld.length; i++) {
     // if element is type paragraph, extract the meta-data, remove from tree
     if (outputOld[i][0] == 'para' && remove) {
-        var metaElement = outputOld[i][1].split(":");
+        var metaElement = splitMetaElement(outputOld[i][1]);
         metaData.push(metaElement);
     } else {
         outputNew.push(outputOld[i]);
