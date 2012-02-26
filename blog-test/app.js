@@ -8,17 +8,16 @@
     * fill html into template 
 */
 
-/*global Beautify, Findit, Fs, Markdown, Plates */
 var Beautify = require("beautify").js_beautify,
     Findit = require("findit"),
     Fs = require("fs"),
     Markdown = require("markdown"),
-    Plates = require("plates");
+    Mustache = require("mustache");
 
 // setup
 var settings = {
                 "directory": "./articles",
-                "template": "templates/simple-html5-template.html",
+                "template": "templates/mustache-html5-template.html",
                 "templateEncoding": "UTF-8"
                 };
 // used template
@@ -52,11 +51,13 @@ function processFile(file, encoding) {
         // create the html
         var htmlOutput = Markdown.markdown.toHTML(jsonOutput);
         // run through template engine
-        var map = Plates.Map();
-        map.where("author").is("").insert("author");
-        var output = Plates.bind(template, { "author": metaData.author }, map);
-        output = Plates.bind(output, { "content": htmlOutput });
-        // insert meta-data
+        var data = {    
+                    "author"    : metaData.author, 
+                    "title"     : metaData.title,
+                    "content"   : htmlOutput
+                    }
+        var output = Mustache.to_html(template, data);
+
         console.log(metaData);
         console.log(Beautify(output));
     });
