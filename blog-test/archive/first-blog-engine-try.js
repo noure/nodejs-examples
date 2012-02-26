@@ -15,7 +15,7 @@ Fs.readFile('articles/hello-world.md', 'utf-8', function(err,data){
         console.error("Could not open file: %s", err);
         process.exit(1);
     }
-    // parse with markdown
+    // parse with markdown https://github.com/evilstreak/markdown-js
     var mdOutput = Markdown.markdown.toHTML(data);
     var data = { "content": mdOutput };
     var output = Plates.bind(template, data);
