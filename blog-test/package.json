@@ -3,10 +3,11 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "findit": "0.1.2",
-        "markdown": "0.3.1",
-        "marked": "0.2.1",
-        "plates": "0.4.5",
-        "should": "0.5.1"
+        "beautify"  : "0.0.1",
+        "findit"    : "0.1.2",
+        "markdown"  : "0.3.1",
+        "marked"    : "0.2.1",
+        "plates"    : "0.4.5",
+        "should"    : "0.5.1"
     }
 }

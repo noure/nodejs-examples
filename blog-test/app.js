@@ -8,9 +8,8 @@
     * fill html into template 
 */
 
-// dependencies
-var 
-    Beautify = require("beautify").js_beautify;
+/*global Beautify, Findit, Fs, Markdown, Plates */
+var Beautify = require("beautify").js_beautify,
     Findit = require("findit"),
     Fs = require("fs"),
     Markdown = require("markdown"),
