@@ -55,8 +55,8 @@ function processFile(file, encoding) {
         // run through template engine
         var map = Plates.Map();
         map.where("author").is("").insert("author");
-        map.where("id").is("content").insert("content");
-        var output = Plates.bind(template, { "content": htmlOutput, "author": metaData.author }, map);
+        var output = Plates.bind(template, { "author": metaData.author }, map);
+        output = Plates.bind(output, { "content": htmlOutput });
         // insert meta-data
         console.log(metaData);
         console.log(Beautify(output));
