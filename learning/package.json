@@ -1,0 +1,11 @@
+{
+    "name":         "learning",
+    "description":  "(pending)",
+    "version":      "0.1",
+    "main":         "./app.js",
+    
+    "author": {
+        "name" :        "Michael R. Lange",
+        "email" :       "daywalker2000@gmx.net"
+    }
+}

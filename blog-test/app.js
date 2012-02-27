@@ -12,7 +12,7 @@ var Beautify = require("beautify").js_beautify,
     Findit = require("findit"),
     Fs = require("fs"),
     Markdown = require("markdown"),
-    Mustache = require("mustache");
+    Mustache = require("mustache"); // https://github.com/janl/mustache.js/
 
 // setup
 var settings = {
