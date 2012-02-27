@@ -5,7 +5,7 @@
     * convert files from markdown to JsonMl
     * extract meta-data
     * convert JsonMl to html
-    * fill html into template 
+    * fill html and metadata into template 
 */
 
 var Beautify = require("beautify").js_beautify,
@@ -46,19 +46,12 @@ function processFile(file, encoding) {
             process.exit(1);
         }
         var jsonOutput = markdownToJson(data);
-        // extract the metadata
-        var metaData = jsonOutput[1];
-        // create the html
-        var htmlOutput = Markdown.markdown.toHTML(jsonOutput);
         // run through template engine
         var data = {    
-                    "author"    : metaData.author, 
-                    "title"     : metaData.title,
-                    "content"   : htmlOutput
+                    "metaData"    : jsonOutput[1], 
+                    "content"   : Markdown.markdown.toHTML(jsonOutput)
                     }
         var output = Mustache.to_html(template, data);
-
-        console.log(metaData);
         console.log(Beautify(output));
     });
 }
