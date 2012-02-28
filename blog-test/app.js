@@ -14,6 +14,11 @@ var Beautify = require("beautify").js_beautify,
     Markdown = require("markdown"),
     Mustache = require("mustache"); // https://github.com/janl/mustache.js/
 
+var wmd = require('wmd');
+
+var html = wmd('Markdown *rocks*.');
+console.log(html);
+
 // setup
 var settings = {
                 "directory": "./articles",

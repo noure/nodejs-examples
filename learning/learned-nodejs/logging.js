@@ -12,14 +12,14 @@ util.puts("an array: " + someArray); // prints only [object]
 var someObject = {"id": 1, "name": "foo"};
 util.puts("an object: " + someObject); // prints only [object]
 
-// object inspecting can be done too
+// but object inspecting can be done too
 var otherObject = {"id": 1, "name": "foo"};
 util.puts("an inspected object: " + util.inspect(otherObject, true, null)); // prints object contents
 
-// logging with console - a global: http://nodejs.org/docs/latest/api/globals.html#console
+// logging with console - a node.js global: http://nodejs.org/docs/latest/api/globals.html#console
 console.log("logging with console");
 
-// does inspect out of the box
+// console.log() does inspect out of the box
 var anotherObject = {"id": 1, "name": "foo"};
 console.log("an inspected object(console can't do it concatenated):");
 console.log(anotherObject);

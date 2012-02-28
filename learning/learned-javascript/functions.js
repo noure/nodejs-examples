@@ -47,3 +47,12 @@ function power(base, exponent) {
     return base * power(base, exponent - 1);
 }
 console.log(power(2,10));
+
+/*
+    anonymous function
+    What you are doing when you call (function(){}) is returning a function object.
+    When you append () to it, it is invoked and anything in the body is executed.    
+*/
+(function(msg) { 
+    console.log(msg); 
+})('anonymous function, called right after declaration');

@@ -33,3 +33,9 @@ for (var current = 20; ; current++) {
 // interesting to see we can access the for counter after the loop
 console.log(current);
 // --------------------------------------------------
+// using continue
+for (var i = 0; i < 10; i++) {
+    if (i % 3 != 0)
+        continue;
+    console.log(i, " is divisible by three.");
+}
