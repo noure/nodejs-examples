@@ -102,3 +102,15 @@ killerRabbit.speak("GRAAAAAAAAAH!");
 /* Why is the new keyword even necessary?
    new does a few things behind the scenes. For one thing, our killerRabbit has a
    property called constructor, which points at the Rabbit function that created it. */
+
+// another approach using prototype
+function RabbitProto(adjective) {
+    this.adjective = adjective;
+}
+RabbitProto.prototype.speak = function(line) {
+    console.log("The ", this.adjective, " rabbit says '", line, "'");
+};
+
+var hazelRabbit = new RabbitProto("hazel");
+hazelRabbit.speak("Good Frith!");
+   
