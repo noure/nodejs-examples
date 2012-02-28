@@ -1,11 +1,13 @@
 {
     "name":         "learning",
     "description":  "(pending)",
-    "version":      "0.1",
-    "main":         "./app.js",
-    
+    "version":      "0.0.1",
+    "main":         "./app.js",    
     "author": {
         "name" :        "Michael R. Lange",
         "email" :       "daywalker2000@gmx.net"
+    },
+    "dependencies": {
+        "prompt": "0.1.x"
     }
 }
