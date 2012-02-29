@@ -17,20 +17,25 @@ var mustache    = require("mustache");
 var path        = require("path");
 var wrench      = require("wrench");
 
+/*
+    Synced working constructor.
+    - setup 
+    - create fresh output directory
+*/
 function Generator(settings) {
     // general setup aka init
     this.settings = settings || this.defaultSettings();
     console.log("using settings:");
     console.log(this.settings);
-    var dir = this.settings.outputDir;
-    // clear outputDir if it exists, create new
+    var dir = fs.realpathSync(this.settings.outputDir);
+    // clear outputDir if it exists and create new
     if (path.existsSync(dir)) {
-        wrench.rmdirSyncRecursive(dir, false);
+        wrench.rmdirSyncRecursive(dir, true);
+        fs.mkdirSync(dir);
     } else {
         // create empty outputDir
         fs.mkdirSync(dir);
     }
-    // for fluent interfaces return this
     return this;
 }
 
@@ -66,12 +71,10 @@ Generator.prototype.commander = function(item) {
             callback();
         },
         function write(callback) {
-            console.log("writing:" + item.file);
+            console.log("writing:" + item.outputFile);
             // writing asynchronously, should be ok
-            fs.writeFile(item.outputFile, item.prettyOutput, function (err) {
-              if (err) throw err;
-              console.log('created:' + item.outputFile);
-            });
+            fs.writeFileSync(item.outputFile, item.prettyOutput);
+            console.log('created:' + item.outputFile);
             callback();
         }
     ],
@@ -121,4 +124,4 @@ Generator.prototype.processFiles = function(settings, commander) {
     });
 }
 
-new Generator().run();
+var generator = new Generator().run();
