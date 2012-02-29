@@ -22,11 +22,16 @@ function Generator(settings) {
     this.settings = settings || this.defaultSettings();
     console.log("using settings:");
     console.log(this.settings);
-    // clear outputDir if it exists
-    if (true) {
-        wrench.rmdirSyncRecursive(this.settings.outputDir, false);
+    var dir = this.settings.outputDir;
+    // clear outputDir if it exists, create new
+    if (path.existsSync(dir)) {
+        wrench.rmdirSyncRecursive(dir, false);
+    } else {
+        // create empty outputDir
+        fs.mkdirSync(dir);
     }
-    // create empty outputDir
+    // for fluent interfaces return this
+    return this;
 }
 
 Generator.prototype.commander = function(item) {
@@ -43,12 +48,12 @@ Generator.prototype.commander = function(item) {
             item.markdown       = parserResult.slice(2);
             item.htmlContent    = markdown.toHTML(parserResult);
             item.metadata       = parserResult[1];
-            callback();            
+            callback();
         },
         function postProcess(callback) {
             console.log("postProcessing:" + item.file);
             console.log(item);
-            callback();            
+            callback();
         },
         function applyTemplate(callback) {
             console.log("apply template to:" + item.file);
@@ -102,12 +107,12 @@ Generator.prototype.processFiles = function(settings, commander) {
                     process.exit(1);
                 } else {
                     console.log("reading:" + file);
+                    // create item
                     var item = { "file"         : file,
                                  "rawdata"      : data,
                                  "template"     : settings.template,
                                  "outputDir"    : settings.outputDir,
-                                 "outputFile"   : settings.outputDir + 
-                                                  path.basename(file, ".md") + ".html"
+                                 "outputFile"   : path.join(settings.outputDir, path.basename(file, ".md") + ".html") 
                     };
                     commander(item);
                 }
@@ -116,5 +121,4 @@ Generator.prototype.processFiles = function(settings, commander) {
     });
 }
 
-var generator = new Generator();
-//generator.run();
+new Generator().run();
