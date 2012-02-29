@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "async"     : "0.1.x",
         "findit"    : "0.1.2",
         "github-flavored-markdown": "1.0.1",
         "jsdom"     : "0.2.13",
