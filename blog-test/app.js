@@ -7,6 +7,7 @@
 // markdown     parser                              http://github.com/evilstreak/markdown-js/
 // mustache     template engine                     https://github.com/janl/mustache.js/
 // path         node.js core module                 http://nodejs.org/docs/latest/api/path.html
+// wrench       recursive file operations           https://github.com/ryanmcgrath/wrench-js
 var async       = require("async");
 var beautify    = require("beautify").js_beautify;
 var fs          = require("fs");
@@ -14,15 +15,18 @@ var findit      = require("findit");
 var markdown    = require("markdown").markdown;
 var mustache    = require("mustache");
 var path        = require("path");
+var wrench      = require("wrench");
 
 function Generator(settings) {
     // general setup aka init
     this.settings = settings || this.defaultSettings();
     console.log("using settings:");
     console.log(this.settings);
-    // create outputDir if needed
     // clear outputDir if it exists
-    fs.rmdirSync("output");
+    if (true) {
+        wrench.rmdirSyncRecursive(this.settings.outputDir, false);
+    }
+    // create empty outputDir
 }
 
 Generator.prototype.commander = function(item) {
