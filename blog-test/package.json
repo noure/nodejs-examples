@@ -5,6 +5,7 @@
     "dependencies": {
         "async"     : "0.1.x",
         "findit"    : "0.1.2",
+        "file"      : "0.1.1",
         "github-flavored-markdown": "1.0.1",
         "jsdom"     : "0.2.13",
         "markdown"  : "0.3.1",
