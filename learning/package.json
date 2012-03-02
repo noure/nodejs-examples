@@ -8,6 +8,9 @@
         "email" :       "daywalker2000@gmx.net"
     },
     "dependencies": {
-        "prompt": "0.1.x"
+        "async"         : "0.1.x",
+        "generic-pool"  : "1.0.x",
+        "prompt"        : "0.1.x",
+        "step"          : "0.0.x"
     }
 }

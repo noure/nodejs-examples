@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// https://github.com/codingforce/poolr
-var poolr = require("poolr").createPool;
+var async       = require("async"); // https://github.com/caolan/async async tools
+var fs = require("fs"); // http://nodejs.org/docs/latest/api/fs.html node.js core filesystem
 var myUtils = require("./lib/utils");
 
 var settings = {
@@ -10,47 +10,28 @@ var settings = {
     "outputDir"         : "output"
 };
 
-
-var Generator = function(settings) {
-    this.settings = settings;
-}
-
-Generator.prototype.processing = function(file, callback) {
-    console.log("processing:" + file);
-    callback();
-    return;
-};
-
 // traverse files in directory
 var run = function() {
-    var generator = new Generator(settings);
-    var myPool = poolr(2, generator);
     myUtils.walk(settings.directory, function(err, files) {
+        console.log(files.length);
         if(err) {
             console.error("Could not open file: %s", err);
             // exit the hard way
             process.exit(1);
         } else {
-            for(var i = 0; i < files.length; i++ ) {
-                myPool.addTask(generator.startProcessing, files[i], function(err, res) {
-                    if (err) throw err;
-                });
-            }
+
+
+//            for(var i = 0; i < files.length; i++) {
+//                processing(files[i], function() {});
+//            }
+
         }
-        return;
     });
-    return;
+
+    function foo(file, callback) {
+        console.log("processing:" + file);
+        callback();
+    };
 };
 
 run();
-
-function processingEntry(entries, index) {
-    var index = index || 0;
-    if (index === entries.length) return done();
-
-    doSomething(entries[index]);
-
-    process.nextTick(function() {
-        processEntry(entries, i++);
-    });
-}

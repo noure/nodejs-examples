@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "async"     : "0.1.x",
+        "chain-gang" : "1.0.x",
         "findit"    : "0.1.2",
         "file"      : "0.1.1",
         "generic-pool" : "1.0.x",
