@@ -11,6 +11,7 @@
         "async"         : "0.1.x",
         "generic-pool"  : "1.0.x",
         "prompt"        : "0.1.x",
+        "simple-schedule": "0.1.x",
         "step"          : "0.0.x"
     }
 }
