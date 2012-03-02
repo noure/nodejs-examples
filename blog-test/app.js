@@ -15,8 +15,41 @@ var settings = {
     "outputDir"         : "output"
 };
 
+var processItem = function(file, rawdata) {
+    async.waterfall([
+        function createItem(callback) {
+            // create item
+            var item        = {};
+            item.outputFile = path.join(settings.outputDir, path.basename(file, ".md") + ".html");
+            item.file       = file;
+            item.rawdata    = rawdata;
+            callback(null, item);
+        },
+        function parse(item, callback) {
+            var parserResult = markdown.parse(item.rawdata, "Maruku");
+            // split result in raw markdown tree and metadata
+            item.markdown       = parserResult.slice(2);
+            item.htmlContent    = markdown.toHTML(parserResult);
+            item.metadata       = parserResult[1];
+            callback(null, item);
+        },
+        function write(item, callback) {
+            fs.writeFile(item.outputFile, item.htmlContent, function (err) {
+                if (err) throw err;
+                console.log('created:' + item.outputFile);
+            });
+            callback(null, item);
+        },
+        function clean(item, callback) {
+            item = null;
+            callback(null, "done");
+        }
+    ], function (err, result) {
+       // result now equals 'done'
+    });
+}
+
 var processFile = function(file, callback) {
-    console.log("processing:" + file);
     if (fs.statSync(file).isFile() && file.indexOf(".md") != -1) {
         readFile(file);
     } else {
@@ -32,11 +65,12 @@ var processFile = function(file, callback) {
                 // exit the hard way
                 process.exit(1);
             } else {
-                console.log("reading:" + file);
-                var item = createItem(file, data);
-                parse(item);
-                write(item);
-                clean(item);
+                //console.log("reading:" + file);
+                processItem(file,data);
+                //var item = createItem(file, data);
+                //parse(item);
+                //write(item);
+                //clean(item);
                 // finish task
                 callback();
             }
