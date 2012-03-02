@@ -6,6 +6,7 @@
         "async"     : "0.1.x",
         "findit"    : "0.1.2",
         "file"      : "0.1.1",
+        "generic-pool" : "1.0.x",
         "github-flavored-markdown": "1.0.1",
         "jsdom"     : "0.2.13",
         "markdown"  : "0.3.1",

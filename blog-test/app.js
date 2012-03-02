@@ -6,122 +6,129 @@
 //  http://nodebits.org/distilled-patterns
 //  http://hueniverse.com/2011/06/the-style-of-non-blocking/
 //
-// dependencies
-// async        managing control flows              https://github.com/caolan/async
-// beautify     beautifies html                     http://jsbeautifier.org/
-// filesystem   node.js core module                 http://nodejs.org/docs/latest/api/fs.html
-// findit       Recursively walk directory trees.   https://github.com/substack/node-findit
-// markdown     parser                              http://github.com/evilstreak/markdown-js/
-// mustache     template engine                     https://github.com/janl/mustache.js/
-// path         node.js core module                 http://nodejs.org/docs/latest/api/path.html
-// wrench       recursive file operations           https://github.com/ryanmcgrath/wrench-js
+// https://github.com/caolan/async async tools
 var async       = require("async");
+// http://jsbeautifier.org/ code beautifier
 var beautify    = require("beautify").js_beautify;
-// exported walk function var file        = require("file");
+// https://github.com/substack/node-findit recursive file operations
 var findit      = require("findit");
+// http://nodejs.org/docs/latest/api/fs.html node.js core filesystem
 var fs          = require("fs");
+// // http://github.com/evilstreak/markdown-js/ markdown parser
 var markdown    = require("markdown").markdown;
+// // https://github.com/janl/mustache.js/ template engine
 var mustache    = require("mustache");
+// http://nodejs.org/docs/latest/api/path.html node.js core for path operations
 var path        = require("path");
+// https://github.com/coopernurse/node-pool pool library
+var poolModule = require('generic-pool');
+// https://github.com/codingforce/poolr
+var poolr = require('poolr').createPool;
+// https://github.com/ryanmcgrath/wrench-js recursive file operations
 var wrench      = require("wrench");
-
 // my own
 var myUtils     = require("./lib/utils");
 
-var myPool = require('poolr').createPool(100);
-
-var defaultSettings = {
+var settings = {
     "directory"         : "articles",
     "template"          : "templates/mustache-html5-template.html",
     "templateEncoding"  : "UTF-8",
     "outputDir"         : "output"
 };
 
-var item = {
-    "template"     : "settings.template",
-    "outputDir"    : "settings.outputDir"
-    //"outputFile"   : "path.join(settings.outputDir, path.basename(file, ".md") + ".html")" 
-};
 
-var commander = function(file) {
-    readFile(file);
-    return;
+var Generator = function(settings) {
+    this.settings = settings;
+}
+
+Generator.prototype.startProcessing = function(file) {
+    console.log("starting");
+    // use .md files only
+    if (fs.statSync(file).isFile() && file.indexOf(".md") != -1) {
+        readFile(file);
+    }
+
     function readFile(file) {
-        fs.readFile(file, "UTF-8", function(err,rawdata){
+        fs.readFile(file, "UTF-8", function(err,data){
             if(err) {
                 console.error("Could not open file: %s", err);
                 // exit the hard way
                 process.exit(1);
             } else {
-                createItem(file, rawdata);
+                createItem(file, data);
             }
         });
         return;
     };
     function createItem(file, rawdata) {
         // create item
-        var item = { "file"         : file,
-                     "rawdata"      : rawdata
-        };
-        preProcess(item);
-        return;
-    };
-    function preProcess(item) {
-        parse(item);
-        return;
-    };
-    function parse(item) {
-        //var parserResult = markdown.parse(item.rawdata, "Maruku");
-        // split result in raw markdown tree and metadata
-        //item.markdown       = parserResult.slice(2);
-        //item.htmlContent    = markdown.toHTML(parserResult);
-        //item.metadata       = parserResult[1];
-        postProcess(item);
-        return;
-    };
-    function postProcess(item) {
-        applyTemplate(item);
-        return;
-    };
-    function applyTemplate(item) {
-        //item.output = mustache.to_html(fs.readFileSync(item.template, "UTF-8"), item);
-        beautifyhtml(item);
-        return;
-    };
-    function beautifyhtml(item) {
-        //item.prettyOutput = beautify(item.output);
-        write(item);
+        var item = new Item(settings, file);
+        item.file = file;
+        item.rawdata = rawdata;
         return;
     };
     function write(item) {
-        //fs.writeFile(item.outputFile, item.prettyOutput, function (err) {
-        //    if (err) throw err;
-        //});
-        clean(item);
+        fs.writeFile(item.outputFile, item.data, function (err) {
+            if (err) throw err;
+            console.log('created:' + item.outputFile);
+            clean(item);
+        });
         return;
     };
     function clean(item) {
+        console.log(item);
         item = null;
         return;
     };
-}
-
-var Generator = function Generator(settings) {
-    this.settings = settings || defaultSettings;
+    return;
 };
 
-Generator.prototype.run = function() {
-    var settings = this.settings;
-    myUtils.walk(settings.directory, function callback(nullValue, dirPath, dirs, files) {
-        if (files && files.length > 0) {
-            for(i=0; i < files.length; i++){
-                myPool.addTask(commander(files[i]), function(err) {
-                        if (err) throw err;    
+var Item = function(settings, file) {
+    this.outputFile = path.join(settings.outputDir, path.basename(file, ".md") + ".html");
+}
+
+var generator = new Generator(settings);
+var myPool = poolr(10, generator);
+
+// standard article object
+
+var preProcess = function(item) {
+    parse(item);
+    return;
+};
+var parse = function(item) {
+    postProcess(item);
+    return;
+};
+var postProcess = function(item) {
+    applyTemplate(item);
+    return;
+};
+var applyTemplate = function(item) {
+    beautifyOutput(item);
+    return;
+};
+var beautifyOutput = function(item) {
+    write(item);
+    return;
+};
+
+
+// traverse files in directory
+var run = function() {
+    myUtils.walk(settings.directory, function(err, files) {
+        if(err) {
+            console.error("Could not open file: %s", err);
+            // exit the hard way
+            process.exit(1);
+        } else {
+            for(var i = 0; i < files.length; i++ ) {
+                myPool.addTask(generator.startProcessing, files[i], function(err, res) {
                 });
             }
         }
+        return;
     });
+    return;
 };
-
-var generator = new Generator();
-generator.run();
+run();
