@@ -1,26 +1,21 @@
 var async = require("async"); // https://github.com/caolan/async
 
-// create a queue object with concurrency 2
-
+// create a queue object with concurrency 200
 var q = async.queue(function (task, callback) {
-    console.log("" + task.name);
-    callback();
-}, 20);
+    function doIt() {
+        console.log("working with:" + task.name);
+        callback();
+    };
+    process.nextTick(doIt);
+}, 200);
 
-// assign a callback
+// assign a callback to call when all task are finished
 q.drain = function() {
     console.log('all items have been processed');
 }
 
-function Count(i) {
-    this.count = i;
-}
-
-console.log("testing maximum capabilities");
 var asyncTest = function() {
-    for(var i = 0; i < 100; i++) {
-        var count = new Count(i);
-        console.log(count);
+    for(var i = 0; i < 10000; i++) {
         q.push({"name": i}, function (err) {
             console.log("processed:" + this.data.name);
         });

@@ -33,10 +33,11 @@ var processItem = function(file, rawdata) {
             item.metadata       = parserResult[1];
             callback(null, item);
         },
+        // sync or async ?
         function write(item, callback) {
             fs.writeFile(item.outputFile, item.htmlContent, function (err) {
                 if (err) throw err;
-                console.log('created:' + item.outputFile);
+                //console.log('created:' + item.outputFile);
             });
             callback(null, item);
         },
@@ -79,11 +80,11 @@ var processFile = function(file, callback) {
 // but the process method writes too - thus using another 100 files for writing
 var q = async.queue(function (task, callback) {
     processFile(task, callback);
+//    function doIt() {
+//        processFile(task, callback);
+//    };
+//    process.nextTick(doIt);
 }, 100);
-// assign a callback
-q.drain = function() {
-    console.log('all items have been processed');
-}
 
 // traverse files in directory
 var run = function() {
@@ -104,5 +105,15 @@ var run = function() {
         }
     });
 };
+
+
+
+// assign a callback for the end of the queue
+q.drain = function() {
+    console.log('all items have been processed');
+    console.log((new Date().getTime() - now)/1000);
+}
+
+var now = new Date().getTime();
 
 run();
