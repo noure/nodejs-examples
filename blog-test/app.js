@@ -67,40 +67,10 @@ var processFile = function(file, callback) {
             } else {
                 //console.log("reading:" + file);
                 processItem(file,data);
-                //var item = createItem(file, data);
-                //parse(item);
-                //write(item);
-                //clean(item);
                 // finish task
                 callback();
             }
         });
-        return;
-    };
-    function createItem(file, rawdata) {
-        // create item
-        var item        = {};
-        item.outputFile = path.join(settings.outputDir, path.basename(file, ".md") + ".html");
-        item.file       = file;
-        item.rawdata    = rawdata;
-        return item;
-    };
-    function parse(item) {
-        var parserResult = markdown.parse(item.rawdata, "Maruku");
-        // split result in raw markdown tree and metadata
-        item.markdown       = parserResult.slice(2);
-        item.htmlContent    = markdown.toHTML(parserResult);
-        item.metadata       = parserResult[1];
-    };
-    function write(item) {
-        fs.writeFile(item.outputFile, item.htmlContent, function (err) {
-            if (err) throw err;
-            console.log('created:' + item.outputFile);
-        });
-        return;
-    };
-    function clean(item) {
-        item = null;
         return;
     };
 };
