@@ -1,12 +1,21 @@
 #!/usr/bin/env node
 var async       = require("async"); // https://github.com/caolan/async async tools
+var beautify    = require("./lib/beautify").js_beautify; // http://jsbeautifier.org/
 var fs          = require("fs"); // http://nodejs.org/docs/latest/api/fs.html node.js core filesystem
 var path        = require("path"); // http://nodejs.org/docs/latest/api/path.html node.js core for path operations
 var markdown    = require("markdown").markdown; // http://github.com/evilstreak/markdown-js/ markdown parser
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
-
-
+var rss         = require('rss'); // https://github.com/dylang/node-rss
 var myUtils     = require("./lib/utils");
+
+var feed = new rss({
+    title: 'title',
+    description: 'description',
+    feed_url: 'http://example.com/rss.xml',
+    site_url: 'http://example.com',
+    image_url: 'http://example.com/icon.png',
+    author: 'Dylan Greene'
+});
 
 var settings = {
     "directory"         : "articles",
@@ -23,6 +32,8 @@ var processItem = function(file, rawdata) {
             item.outputFile = path.join(settings.outputDir, path.basename(file, ".md") + ".html");
             item.file       = file;
             item.rawdata    = rawdata;
+            item.template   = settings.template;
+            // first value is error
             callback(null, item);
         },
         function parse(item, callback) {
@@ -31,22 +42,51 @@ var processItem = function(file, rawdata) {
             item.markdown       = parserResult.slice(2);
             item.htmlContent    = markdown.toHTML(parserResult);
             item.metadata       = parserResult[1];
+            // shall publish?
+            if(item.metadata && item.metadata.published == "true") {
+                callback(null, item);
+            } else {
+                item = null;
+                // exit
+                callback("exit");
+            }
+        },
+        function addFeedItem(item, callback) {
+            feed.item({
+                title:  item.metadata.title,
+                description: 'use this for the content. It can include html.',
+                url: 'http://example.com/article4?this&that', // link to the item
+                guid: '1123', // optional - defaults to url
+                author: item.metadata.author, // optional - defaults to feed author property
+                date: item.metadata.date // any format that js Date can parse.
+            });
+            callback(null, item);
+        },
+        function applyTemplate(item, callback) {
+            item.output = mustache.to_html(fs.readFileSync(item.template, "UTF-8"), item);
+            callback(null, item);
+        },
+        function beautifyhtml(item, callback) {
+            //console.log("beautifying the html:" + item.file);
+            item.prettyOutput = beautify(item.output);
             callback(null, item);
         },
         // sync or async ?
         function write(item, callback) {
-            fs.writeFile(item.outputFile, item.htmlContent, function (err) {
+            fs.writeFile(item.outputFile, item.prettyOutput, function (err) {
                 if (err) throw err;
-                //console.log('created:' + item.outputFile);
+                console.log('created:' + item.outputFile);
             });
             callback(null, item);
         },
         function clean(item, callback) {
             item = null;
-            callback(null, "done");
+            callback("done");
         }
     ], function (err, result) {
-       // result now equals 'done'
+        if(err == "done") {
+            console.log(err);
+        }
     });
 }
 
@@ -79,18 +119,18 @@ var processFile = function(file, callback) {
 // create a queue object with concurrency 100, my osx allows max 256 open files (use ulimit -a)
 // but the process method writes too - thus using another 100 files for writing
 var q = async.queue(function (task, callback) {
-    processFile(task, callback);
-//    function doIt() {
-//        processFile(task, callback);
-//    };
-//    process.nextTick(doIt);
+    // without process.nextTick 
+    // processFile(task, callback);
+    function doIt() {
+        processFile(task, callback);
+    };
+    process.nextTick(doIt);
 }, 100);
 
 // traverse files in directory
 var run = function() {
     var result = []
     myUtils.walk(settings.directory, function(err, files) {
-        console.log(files.length);
         if(err) {
             console.error("Could not open file: %s", err);
             // exit the hard way
@@ -112,6 +152,8 @@ var run = function() {
 q.drain = function() {
     console.log('all items have been processed');
     console.log((new Date().getTime() - now)/1000);
+    // create rss
+    console.log(beautify(feed.xml()));
 }
 
 var now = new Date().getTime();

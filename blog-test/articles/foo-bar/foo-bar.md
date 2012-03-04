@@ -1,8 +1,9 @@
 name:foo-bar
 title:foo title
 author:Michael R. Lange
-date:24.02.2012
+date:January 02, 2012 23:59 +0100
 tags:foo,bar,foobar
+published:true
 
 # A Foo Bar Article
 

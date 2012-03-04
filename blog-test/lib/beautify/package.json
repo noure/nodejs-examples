@@ -1,0 +1,5 @@
+{
+    "name": "beautify",
+    "version": "0.0.1",
+    "main": "./beautify-html.js"
+}
