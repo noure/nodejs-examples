@@ -11,9 +11,9 @@ var myUtils     = require("./lib/utils");
 var feed = new rss({
     title: 'title',
     description: 'description',
-    feed_url: 'http://example.com/rss.xml',
-    site_url: 'http://example.com',
-    image_url: 'http://example.com/icon.png',
+    feed_url: 'http://emerpe.de/rss.xml',
+    site_url: 'http://emerpe.de',
+    image_url: 'http://emerpe.de/icon.png',
     author: 'Dylan Greene'
 });
 
@@ -55,8 +55,8 @@ var processItem = function(file, rawdata) {
             feed.item({
                 title:  item.metadata.title,
                 description: 'use this for the content. It can include html.',
-                url: 'http://example.com/article4?this&that', // link to the item
-                guid: '1123', // optional - defaults to url
+                url: 'http://example.com/article4' + item.file, // link to the item
+                //guid: '1123', // optional - defaults to url
                 author: item.metadata.author, // optional - defaults to feed author property
                 date: item.metadata.date // any format that js Date can parse.
             });
