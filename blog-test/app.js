@@ -17,6 +17,8 @@ var feed = new rss({
     author: 'Dylan Greene'
 });
 
+var feedTemp = [];
+
 var settings = {
     "directory"         : "articles",
     "template"          : "templates/mustache-html5-template.html",
@@ -52,14 +54,16 @@ var processItem = function(file, rawdata) {
             }
         },
         function addFeedItem(item, callback) {
-            feed.item({
-                title:  item.metadata.title,
-                description: 'use this for the content. It can include html.',
-                url: 'http://example.com/article4' + item.file, // link to the item
-                //guid: '1123', // optional - defaults to url
-                author: item.metadata.author, // optional - defaults to feed author property
-                date: item.metadata.date // any format that js Date can parse.
-            });
+            feedTemp.push(
+                {
+                    title:  item.metadata.title,
+                    description: 'use this for the content. It can include html.',
+                    url: 'http://example.com/article4' + item.file, // link to the item
+                    //guid: '1123', // optional - defaults to url
+                    author: item.metadata.author, // optional - defaults to feed author property
+                    date: item.metadata.date // any format that js Date can parse.
+                }
+            );
             callback(null, item);
         },
         function applyTemplate(item, callback) {
@@ -153,6 +157,9 @@ q.drain = function() {
     console.log('all items have been processed');
     console.log((new Date().getTime() - now)/1000);
     // create rss
+    feedTemp.forEach(function(item) {
+        feed.item(item);
+    })
     console.log(beautify(feed.xml()));
 }
 
