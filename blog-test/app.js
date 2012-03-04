@@ -27,9 +27,16 @@ var beautify    = require("./lib/beautify").js_beautify; // http://jsbeautifier.
 var fs          = require("fs"); // http://nodejs.org/docs/latest/api/fs.html node.js core filesystem
 var path        = require("path"); // http://nodejs.org/docs/latest/api/path.html node.js core for path operations
 var markdown    = require("markdown").markdown; // http://github.com/evilstreak/markdown-js/ markdown parser
+var marked      = require("marked"); // https://github.com/chjj/marked
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
 var rss         = require('rss'); // https://github.com/dylang/node-rss
 var myUtils     = require("./lib/utils");
+
+marked.setOptions({
+  gfm: true,
+  pedantic: false,
+  sanitize: true
+});
 
 var feed = new rss({
     title: 'title',

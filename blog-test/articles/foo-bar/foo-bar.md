@@ -16,3 +16,15 @@ A simple list:
 * foo
 * bar
     * foobar
+    
+<p>trying out a bit pure html</p>
+
+<div>
+    foo inside a div
+</div>
+
+    a code block
+    
+![alternative text](/path/to/img.jpg "a image")
+
+trying to use html inside a paragraph <img alt="Alt text" title="a image" src="/path/to/img.jpg"></img>
