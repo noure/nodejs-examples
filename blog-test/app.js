@@ -2,6 +2,15 @@
 
 
 /*
+
+    
+    * article features
+        * markdown
+        * check all outgoing links to be correct
+        * check all internal links too
+        * check html5/css3 validation - dazu müßte man die validator engines lokal installieren
+            * http://www.456bereastreet.com/archive/201105/installing_the_w3c_markup_validator_on_mac_os_x/
+            * http://about.validator.nu/#src
     * read markdown articles
     * parse to html
     * create rss,xml
@@ -78,6 +87,7 @@ var processFile = function(file, rawdata) {
             item.metadata       = parserResult[1];
             // shall publish?
             if(item.metadata && item.metadata.published == "true") {
+                console.log(parserResult);
                 callback(null, item);
             } else {
                 item = null;
@@ -105,11 +115,16 @@ var processFile = function(file, rawdata) {
             callback(null, item);
         },
         // sync
+        function checkHtml(item, callback) {
+            // use w3c api?
+            callback(null, item);
+        },
+        // sync
         function beautifyhtml(item, callback) {
             //console.log("beautifying the html:" + item.file);
             item.prettyOutput = beautify(item.output);
             callback(null, item);
-        },
+        },        
         // async
         function write(item, callback) {
             fs.writeFile(item.outputFile, item.prettyOutput, function (err) {
