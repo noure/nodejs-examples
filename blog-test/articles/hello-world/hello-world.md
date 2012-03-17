@@ -3,7 +3,7 @@ title:the title
 author:Michael R. Lange
 date:2012-03-03 23:59:00 GMT+0100
 tags:one,two,three,four
-published:true
+published:false
 
 # A simple Hello World! article
 

@@ -24,6 +24,7 @@
                 * processFile(sync)
                     * initItem(sync)
                     * parse(sync)
+                    * applySyntaxHighlight(sync)
                     * addFeedItem(sync)
                     * applyTemplate(sync)
                     * beautifyHtml(sync)
@@ -34,10 +35,17 @@
 var async       = require("async"); // https://github.com/caolan/async async tools
 var beautify    = require("./lib/beautify").js_beautify; // http://jsbeautifier.org/
 var fs          = require("fs"); // http://nodejs.org/docs/latest/api/fs.html node.js core filesystem
+var highlight   = require("highlight.js"); // https://github.com/jgallen23/highlight.js
 var path        = require("path"); // http://nodejs.org/docs/latest/api/path.html node.js core for path operations
+// i changed the markdown implementation
+//      function render_tree does not use escapeHTML anymore, this makes it possible to get the code blocks
+//      styled with highlight.js, see applySyntaxHighlight
 var markdown    = require("markdown").markdown; // http://github.com/evilstreak/markdown-js/ markdown parser
 var marked      = require("marked"); // https://github.com/chjj/marked
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
+var namp        = require("namp");
+// i changed the module to handle the image_url for the rss feed
+// see https://github.com/langmi/node-rss/commit/01a202705337f67cc6f900741d515cbcd2e9402a
 var rss         = require('rss'); // https://github.com/dylang/node-rss
 var myUtils     = require("./lib/utils");
 
@@ -83,17 +91,34 @@ var processFile = function(file, rawdata) {
             var parserResult = markdown.parse(item.rawdata, "Maruku");
             // split result in raw markdown tree and metadata
             item.markdown       = parserResult.slice(2);
-            item.htmlContent    = markdown.toHTML(parserResult);
             item.metadata       = parserResult[1];
             // shall publish?
             if(item.metadata && item.metadata.published == "true") {
-                console.log(parserResult);
                 callback(null, item);
             } else {
                 item = null;
                 // exit
                 callback("exit");
             }
+        },
+        function parseWithNamp(item, callback) {
+            //console.log(namp.toHTML(item.rawdata, {highlight: true } ));
+            callback(null, item);
+        },
+        // sync
+        function applySyntaxHighlight(item, callback) {
+            for (var current = 0; current < item.markdown.length; current++) {
+                if (item.markdown[current] instanceof Array
+                    && item.markdown[current][0] == "code_block") {
+                        //item.markdown[current][1] = highlight.highlightAuto(item.markdown[current][1]).value;
+                }
+            }
+            callback(null, item);
+        },
+        function parseToHtml(item, callback) {
+            item.htmlContent = markdown.toHTML(item.markdown);
+            //item.htmlContent = namp.toHTML(item.rawdata, {highlight: true } ).html;
+            callback(null, item);
         },
         // sync
         function addFeedItem(item, callback) {
@@ -121,8 +146,9 @@ var processFile = function(file, rawdata) {
         },
         // sync
         function beautifyhtml(item, callback) {
-            //console.log("beautifying the html:" + item.file);
-            item.prettyOutput = beautify(item.output);
+            //beautify indents pre blocks, which does not look beautiful to me
+            //item.prettyOutput = beautify(item.output);
+            item.prettyOutput = item.output;
             callback(null, item);
         },        
         // async
@@ -158,7 +184,6 @@ var read = function(file, callback) {
                 // exit the hard way
                 process.exit(1);
             } else {
-                //console.log("reading:" + file);
                 processFile(file,data);
                 // finish task
                 callback();

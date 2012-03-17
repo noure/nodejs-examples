@@ -23,8 +23,20 @@ A simple list:
     foo inside a div
 </div>
 
-    a code block
+`inline code? with <> arrows`
+
+    is this code?
+
+```xml
+<p>a code block, with real code</p>
+<p>foo</p>
+```
     
 ![alternative text](/path/to/img.jpg "a image")
 
 trying to use html inside a paragraph <img alt="Alt text" title="a image" src="/path/to/img.jpg"></img>
+
+
+> Zitat
+> hier geht das Zitat weiter
+{: cite=google.com}
