@@ -27,10 +27,10 @@ A simple list:
 
     is this code?
 
-```xml
-<p>a code block, with real code</p>
-<p>foo</p>
-```
+
+    <p>a code block, with real code</p>
+    <p>foo</p>
+
     
 ![alternative text](/path/to/img.jpg "a image")
 

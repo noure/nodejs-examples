@@ -116,6 +116,7 @@ var processFile = function(file, rawdata) {
             callback(null, item);
         },
         function parseToHtml(item, callback) {
+            console.log(markdown.toHTMLTree(item.markdown, "Maruku"));
             item.htmlContent = markdown.toHTML(item.markdown);
             //item.htmlContent = namp.toHTML(item.rawdata, {highlight: true } ).html;
             callback(null, item);

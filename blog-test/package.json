@@ -16,6 +16,7 @@
         "marked"    : "0.2.1",
         "mustache"  : "0.4.0",
         "namp"      : "0.1.4",
+        "node-markdown" : "0.1.0",
         "plates"    : "0.4.5",
         "poolr"     : "0.0.6",
         "rss"       : "0.0.x",
