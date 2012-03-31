@@ -41,7 +41,7 @@ var path        = require("path"); // http://nodejs.org/docs/latest/api/path.htm
 //      function render_tree does not use escapeHTML anymore, this makes it possible to get the code blocks
 //      styled with highlight.js, see applySyntaxHighlight
 var markdown    = require("markdown").markdown; // http://github.com/evilstreak/markdown-js/ markdown parser
-var marked      = require("marked"); // https://github.com/chjj/marked
+var marked      = require("marked"); // https://github.com/chjj/marked, i do not used, because it is not able to parse meta-data
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
 var namp        = require("namp");
 // i changed the module to handle the image_url for the rss feed
@@ -87,6 +87,7 @@ var processFile = function(file, rawdata) {
             callback(null, item);
         },
         // sync
+        // using markdown
         function parse(item, callback) {
             var parserResult = markdown.parse(item.rawdata, "Maruku");
             // split result in raw markdown tree and metadata
@@ -100,6 +101,12 @@ var processFile = function(file, rawdata) {
                 // exit
                 callback("exit");
             }
+        },
+        function parseMarked(item, callback) {
+            //var tokens = marked.lexer(item.rawdata);
+            //console.log("###### parseMarked");
+            //console.log(tokens);
+            callback(null, item);
         },
         function parseWithNamp(item, callback) {
             //console.log(namp.toHTML(item.rawdata, {highlight: true } ));
@@ -116,7 +123,7 @@ var processFile = function(file, rawdata) {
             callback(null, item);
         },
         function parseToHtml(item, callback) {
-            console.log(markdown.toHTMLTree(item.markdown, "Maruku"));
+            //console.log(markdown.toHTMLTree(item.markdown, "Maruku"));
             item.htmlContent = markdown.toHTML(item.markdown);
             //item.htmlContent = namp.toHTML(item.rawdata, {highlight: true } ).html;
             callback(null, item);
