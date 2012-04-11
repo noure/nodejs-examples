@@ -40,7 +40,10 @@ var path        = require("path"); // http://nodejs.org/docs/latest/api/path.htm
 // i changed the markdown implementation
 //      function render_tree does not use escapeHTML anymore, this makes it possible to get the code blocks
 //      styled with highlight.js, see applySyntaxHighlight
-var markdown    = require("markdown").markdown; // http://github.com/evilstreak/markdown-js/ markdown parser
+// http://github.com/evilstreak/markdown-js/
+// can't parse ordered lists
+// cant' parse meta-data for code-blocks (specifying the used language)
+var markdown    = require("markdown").markdown;
 var marked      = require("marked"); // https://github.com/chjj/marked, i do not used, because it is not able to parse meta-data
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
 var namp        = require("namp");
@@ -67,7 +70,7 @@ var feed = new rss({
 var feedTemp = [];
 
 var settings = {
-    "directory"         : "articles",
+    "directory"         : "articles/markdown-examples",
     "template"          : "templates/mustache-html5-template.html",
     "templateEncoding"  : "UTF-8",
     "outputDir"         : "output"
@@ -89,12 +92,15 @@ var processFile = function(file, rawdata) {
         // sync
         // using markdown
         function parse(item, callback) {
+            callback(null, item);
             var parserResult = markdown.parse(item.rawdata, "Maruku");
+            //var parserResult = markdown.parse(item.rawdata);
             // split result in raw markdown tree and metadata
             item.markdown       = parserResult.slice(2);
             item.metadata       = parserResult[1];
-            // shall publish?
+            // publish?
             if(item.metadata && item.metadata.published == "true") {
+                console.log(parserResult);
                 callback(null, item);
             } else {
                 item = null;
