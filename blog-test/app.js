@@ -58,6 +58,11 @@ marked.setOptions({
   sanitize: true
 });
 
+// especially the insides of pre (code) blocks should not be beautified
+var beautifyOptions = {
+    'unformatted': ['pre']
+};
+
 var feed = new rss({
     title: 'title',
     description: 'description',
@@ -92,15 +97,13 @@ var processFile = function(file, rawdata) {
         // sync
         // using markdown
         function parse(item, callback) {
-            callback(null, item);
             var parserResult = markdown.parse(item.rawdata, "Maruku");
-            //var parserResult = markdown.parse(item.rawdata);
             // split result in raw markdown tree and metadata
             item.markdown       = parserResult.slice(2);
             item.metadata       = parserResult[1];
             // publish?
             if(item.metadata && item.metadata.published == "true") {
-                console.log(parserResult);
+                //console.log(parserResult);
                 callback(null, item);
             } else {
                 item = null;
@@ -114,7 +117,7 @@ var processFile = function(file, rawdata) {
             //console.log(tokens);
             callback(null, item);
         },
-        function parseWithNamp(item, callback) {
+        function parseWithNamp(item, callback) {        
             //console.log(namp.toHTML(item.rawdata, {highlight: true } ));
             callback(null, item);
         },
@@ -123,19 +126,29 @@ var processFile = function(file, rawdata) {
             for (var current = 0; current < item.markdown.length; current++) {
                 if (item.markdown[current] instanceof Array
                     && item.markdown[current][0] == "code_block") {
-                        //item.markdown[current][1] = highlight.highlightAuto(item.markdown[current][1]).value;
+                        console.log(item.markdown[current]);
+                        // code_block can contain a meta-data block like {: key=value}
+                        if (item.markdown[current].length == 2) {
+                            item.markdown[current][1] = highlight.highlightAuto(item.markdown[current][1]).value;
+                        }
+                        if (item.markdown[current].length == 3) {
+                            // use language info
+                            item.markdown[current][2] = highlight.highlight(item.markdown[current][1].language,
+                                                                            item.markdown[current][2]).value;
+                        }
+                        console.log(item.markdown[current]);
                 }
             }
             callback(null, item);
         },
-        function parseToHtml(item, callback) {
+        function convertToHtml(item, callback) {
             //console.log(markdown.toHTMLTree(item.markdown, "Maruku"));
             item.htmlContent = markdown.toHTML(item.markdown);
             //item.htmlContent = namp.toHTML(item.rawdata, {highlight: true } ).html;
             callback(null, item);
         },
         // sync
-        function addFeedItem(item, callback) {
+        function createFeedItem(item, callback) {
             feedTemp.push(
                 {
                     title:  item.metadata.title,
@@ -161,24 +174,23 @@ var processFile = function(file, rawdata) {
         // sync
         function beautifyhtml(item, callback) {
             //beautify indents pre blocks, which does not look beautiful to me
-            //item.prettyOutput = beautify(item.output);
-            item.prettyOutput = item.output;
+            item.prettyOutput = beautify(item.output, beautifyOptions);
+            //item.prettyOutput = item.output;
             callback(null, item);
         },        
         // async
         function write(item, callback) {
+            console.log("write");
             fs.writeFile(item.outputFile, item.prettyOutput, function (err) {
                 if (err) throw err;
                 console.log('created:' + item.outputFile);
                 // free memory
                 item = null;
             });
-            callback("done");
+            callback();
         },
     ], function (err, result) {
-        if(err == "done") {
             console.log(err);
-        }
     });
 }
 
@@ -207,8 +219,9 @@ var read = function(file, callback) {
     };
 };
 
-// create a queue object with concurrency 100, my osx allows max 256 open files (use ulimit -a)
+// create a queue object with concurrency 100, my osx allows max 256 open files 
 // but the process method writes too - thus using another 100 files for writing
+//      use ulimit -a to find the osx user limits
 var q = async.queue(function (task, callback) {
     // without process.nextTick 
     // processFile(task, callback);

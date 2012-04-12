@@ -28,7 +28,7 @@ closing hashes are optional
 	# H1 # 
 
 ### Header with ID ###
-{: key=val .class #id ref_id}
+{: #header1 }
 
 [Link back to header 1](#header1)
 
@@ -99,13 +99,12 @@ Backticks format and auto-escape `&`, `<` and `>` in code, e.g. in `<foo>` or `&
 
 	Preformatted code is also easy. &trade;
 	<strong>Just indent 4 spaces.</strong>
-{: val=key}
 
 ### Code with Meta-Data
 
 	Preformatted code is also easy. &trade;
 	<strong>Just indent 4 spaces.</strong>
-{: val=key}
+{: language=xml}
 
 
 ## Escaping
