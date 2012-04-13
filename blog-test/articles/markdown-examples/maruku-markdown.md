@@ -1,7 +1,7 @@
 published:true
-some:metadata
-like:an
-author:micha
+some:     metadata
+like:     an
+author:   micha
 
 # MultiMarkDown CheatSheet - and this is a title too!
 

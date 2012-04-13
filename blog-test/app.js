@@ -103,7 +103,7 @@ var processFile = function(file, rawdata) {
             item.metadata       = parserResult[1];
             // publish?
             if(item.metadata && item.metadata.published == "true") {
-                //console.log(parserResult);
+                console.log(item.metadata);
                 callback(null, item);
             } else {
                 item = null;
