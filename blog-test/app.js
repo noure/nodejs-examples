@@ -43,7 +43,7 @@ var path        = require("path"); // http://nodejs.org/docs/latest/api/path.htm
 // http://github.com/evilstreak/markdown-js/
 // can't parse ordered lists
 // cant' parse meta-data for code-blocks (specifying the used language)
-var markdown    = require("markdown").markdown;
+var markdown    = require("markdown").markdown; // https://github.com/evilstreak/markdown-js
 var marked      = require("marked"); // https://github.com/chjj/marked, i do not used, because it is not able to parse meta-data
 var mustache    = require("mustache"); // https://github.com/janl/mustache.js/ template engine
 var namp        = require("namp");
